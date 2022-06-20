@@ -2,6 +2,7 @@
 import pandas as pd
 import os
 import json
+import logging
 #%%
 
 def read_trending_data(files_path) -> pd.DataFrame:
@@ -15,6 +16,8 @@ def read_trending_data(files_path) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Dataframe with all Youtube data
     """
+
+    logging.info('executting read_trending_data')
     dataframes_list = []
 
     for filename in os.listdir(files_path):
@@ -39,7 +42,7 @@ def read_category_data(file_path) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Dataframe with category data
     """
-
+    logging.info("executting read_category_data")
     dataframe_list = []
 
     for filename in os.listdir(file_path):
