@@ -9,12 +9,22 @@ from create_data_base import read_trending_data
 # ChannelTitle 1
 # Description 51719
 def check_nan_values(data_base):
+    """This function checks if any column has a nan values
+
+    Args:
+        data_base (dataframe): database
+    """
     for column in data_base:
         print(column,' ', data_base[column].isnull().values.any())
         print(data_base[column].isnull().sum())
 
 # All columns has repeted values
 def check_unique_values(data_base):
+    """This functions checks if any column has repeted values
+
+    Args:
+        data_base (dataframe): database
+    """
     for column in data_base:
         values_list = data_base[column].value_counts().values
         for values in values_list:
@@ -24,6 +34,11 @@ def check_unique_values(data_base):
 
 
 def explore_data_base(data_base):
+    """This functions explores some columns in the database
+
+    Args:
+        data_base (dataframe): database
+    """
 
     print(data_base.info())
 
