@@ -29,7 +29,6 @@ def read_trending_data(files_path) -> pd.DataFrame:
     return pd.concat(dataframes_list)
 
 
-data_base = read_trending_data("data/")
 #%%
 
 def read_category_data(file_path) -> pd.DataFrame:
@@ -60,5 +59,29 @@ def read_category_data(file_path) -> pd.DataFrame:
 
     return pd.concat(dataframe_list)
 
+
+# %%
+def remove_nan_rows(data_base, column_name) -> bool:
+    """This function removes all rows with nan values in
+       column_name columns
+    Args:
+        data_base (dataframe): database
+        column_name (list): list with column names
+
+    Returns:
+        bool: True if removed any lines or False otherwise
+    """
+    before_rows = data_base.shape[0]
+    data_base.dropna(axis=0,subset=column_name, inplace=True)
+    
+    if(before_rows != data_base.shape[0]):
+        return True
+    
+    return False
+
+#%%
 category_data = read_category_data("data/")
+data_base = read_trending_data("data/")
+remove_nan_rows(data_base,['channelTitle'])
+# %%
 # %%
