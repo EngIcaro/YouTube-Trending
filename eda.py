@@ -66,12 +66,10 @@ def explore_data_base(data_base):
     print(data_base['description'].describe())
 #%%
 data_base = read_trending_data("data/")
-#%%
+
 check_nan_values(data_base)
 
-#%%
 check_unique_values(data_base)
 
-#%%
 explore_data_base(data_base)
-# %%
+
