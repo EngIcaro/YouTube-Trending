@@ -80,8 +80,31 @@ def remove_nan_rows(data_base, column_name) -> bool:
     return False
 
 #%%
-category_data = read_category_data("data/")
-data_base = read_trending_data("data/")
-remove_nan_rows(data_base,['channelTitle'])
+#category_data = read_category_data("data/")
+#data_base = read_trending_data("data/")
+#remove_nan_rows(data_base,['channelTitle'])
 # %%
+# %%
+
+import psycopg2 as pg
+from sqlalchemy import create_engine
+# %%
+#establishing the connection
+conn = pg.connect(
+    database="mydb",user='postgres', password='postgres', host='localhost', port= '5432'
+)
+conn.autocommit = True
+# %%
+#Creating a cursor object using the cursor() method
+cursor = conn.cursor() 
+#Preparing query to create a database
+sql = "CREATE database ondeee"
+#%%
+#Creating a database
+cursor.execute(sql)
+print("Database created successfully........")
+# %%
+conn.close()
+# %%
+cursor.execute("CREATE TABLE WIP_S3 (RMA VARCHAR);")
 # %%
