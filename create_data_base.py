@@ -98,6 +98,7 @@ conn.autocommit = True
 #Creating a cursor object using the cursor() method
 cursor = conn.cursor() 
 #Preparing query to create a database
+#%%
 sql = "CREATE database ondeee"
 #%%
 #Creating a database
@@ -107,4 +108,6 @@ print("Database created successfully........")
 conn.close()
 # %%
 cursor.execute("CREATE TABLE WIP_S3 (RMA VARCHAR);")
+# %%
+cursor.execute("INSERT INTO WIP_S3 (RMA) VALUES('OIEEE2');")
 # %%
