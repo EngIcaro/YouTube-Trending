@@ -89,25 +89,34 @@ def remove_nan_rows(data_base, column_name) -> bool:
 import psycopg2 as pg
 from sqlalchemy import create_engine
 # %%
-#establishing the connection
-conn = pg.connect(
-    database="mydb",user='postgres', password='postgres', host='localhost', port= '5432'
-)
-conn.autocommit = True
-# %%
-#Creating a cursor object using the cursor() method
-cursor = conn.cursor() 
-#Preparing query to create a database
+def create_database() -> tuple[pg.cursor, pg.connection]:
+    """This function is responsible for creates and connects to the 
+       youtubedb. As aksi REturns the connection and cursor to 
+       youtubedb
+
+    Returns:
+        tuple[pg.cursor, pg.connection]: cursor and connection to
+        youtubedb
+    """
+    #establishing the connection
+    conn = pg.connect(
+        database="postgres",user='postgres', password='postgres', host='localhost', port= '5432'
+    )
+    conn.autocommit = True
+    cursor = conn.cursor() 
+
+    # create youtube database with UTF8
+    cursor.execute("DROP DATABASE IF EXISTS youtubedb")
+    cursor.execute("CREATE DATABASE youtubedb WITH ENCODING 'utf8'")
+
+    # close connection to default database
+    conn.close()
+
+    # connect to sparkify database
+    conn = pg.connect(
+        database="youtubedb",user='postgres', password='postgres', host='localhost', port= '5432'
+    )
+    cursor = conn.cursor()
+
+    return cursor, conn
 #%%
-sql = "CREATE database ondeee"
-#%%
-#Creating a database
-cursor.execute(sql)
-print("Database created successfully........")
-# %%
-conn.close()
-# %%
-cursor.execute("CREATE TABLE WIP_S3 (RMA VARCHAR);")
-# %%
-cursor.execute("INSERT INTO WIP_S3 (RMA) VALUES('OIEEE2');")
-# %%
