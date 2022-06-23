@@ -80,18 +80,19 @@ def remove_nan_rows(data_base, column_name) -> bool:
     return False
 
 #%%
-#category_data = read_category_data("data/")
-#data_base = read_trending_data("data/")
-#remove_nan_rows(data_base,['channelTitle'])
+category_data = read_category_data("data/")
+data_base = read_trending_data("data/")
+remove_nan_rows(data_base,['channelTitle'])
 # %%
 # %%
 
 import psycopg2 as pg
-from sqlalchemy import create_engine
+from tqdm import tqdm
 # %%
-def create_database() -> tuple[pg.cursor, pg.connection]:
+def create_database():
+ 
     """This function is responsible for creates and connects to the 
-       youtubedb. As aksi REturns the connection and cursor to 
+       youtubedb. As also Returns the connection and cursor to 
        youtubedb
 
     Returns:
@@ -117,6 +118,114 @@ def create_database() -> tuple[pg.cursor, pg.connection]:
         database="youtubedb",user='postgres', password='postgres', host='localhost', port= '5432'
     )
     cursor = conn.cursor()
+    conn.autocommit = True
 
     return cursor, conn
+
+cur, conn = create_database()
 #%%
+
+staging_youtube_trending = ("""CREATE TABLE IF NOT EXISTS staging_youtube
+                                (
+                                    staging_youtube_id_seq SERIAL PRIMARY KEY ,
+                                    video_id               varchar NOT NULL   ,
+                                    title                  varchar            ,
+                                    published_at           varchar NOT NULL   ,
+                                    channel_id             varchar NOT NULL   ,
+                                    channel_title          varchar            ,
+                                    category_id            smallint           ,
+                                    trending_date          varchar            ,
+                                    tags                   varchar            ,
+                                    view_count             integer            ,
+                                    likes                  integer            ,
+                                    dislikes               integer            ,
+                                    comment_count          integer            ,
+                                    thumbnail_link         varchar            ,
+                                    comments_disabled      varchar            ,
+                                    rating                 varchar            ,
+                                    description            varchar            ,
+                                    country                varchar
+                                );
+                        """)
+
+cur.execute(staging_youtube_trending)
+# %%
+
+staging_category_channel = ("""CREATE TABLE IF NOT EXISTS staging_category
+                                (
+                                    staging_category_id_seq SERIAL PRIMARY KEY ,
+                                    category_id             smallint           ,  
+                                    category_title          varchar            ,
+                                    country                 varchar            
+
+                                );
+                        """)
+
+cur.execute(staging_category_channel)
+#%%
+staging_youtube_insert = ("""INSERT INTO staging_youtube
+                            (
+                                video_id               ,
+                                title                  ,
+                                published_at           ,
+                                channel_id             ,
+                                channel_title          ,
+                                category_id            ,
+                                trending_date          ,
+                                tags                   ,
+                                view_count             ,
+                                likes                  ,
+                                dislikes               ,
+                                comment_count          ,
+                                thumbnail_link         ,
+                                comments_disabled      ,
+                                rating                 ,
+                                description            ,
+                                country
+                            )
+                            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                        """)
+
+
+for index, row in data_base.iterrows():
+
+    youtube_data = (row.video_id      ,       
+                    row.title         ,        
+                    row.publishedAt   ,        
+                    row.channelId     ,
+                    row.channelTitle  ,
+                    row.categoryId    ,
+                    row.trending_date ,
+                    row.tags          ,
+                    row.view_count    ,
+                    row.likes         ,
+                    row.dislikes      ,
+                    row.comment_count ,
+                    row.thumbnail_link,
+                    row.comments_disabled ,
+                    row.ratings_disabled  ,
+                    row.description       ,
+                    row.country
+                    )
+    cur.execute(staging_youtube_insert, youtube_data)
+# %%
+staging_category_insert = ("""INSERT INTO staging_category
+                            (
+                                category_id    ,
+                                category_title ,
+                                country
+                            )
+                            VALUES(%s,%s,%s)
+                        """)
+
+for index, row in tqdm(category_data.iterrows()):
+
+    category_data=(
+                    row.categoryId    ,
+                    row.categoryTitle , 
+                    row.country
+
+                )
+
+    cur.execute(staging_category_insert, category_data)
+# %%
