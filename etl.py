@@ -32,7 +32,7 @@ def read_trending_data(files_path) -> pd.DataFrame:
     return pd.concat(dataframes_list)
 
 
-#%%
+
 
 def read_category_data(file_path) -> pd.DataFrame:
     """this function reads all category json files and returns 
@@ -63,7 +63,7 @@ def read_category_data(file_path) -> pd.DataFrame:
     return pd.concat(dataframe_list)
 
 
-# %%
+
 def remove_nan_rows(data_base, column_name) -> bool:
     """This function removes all rows with nan values in
        column_name columns
@@ -82,7 +82,7 @@ def remove_nan_rows(data_base, column_name) -> bool:
     
     return False
 
-#%%
+
 def process_trending_data(cur, data_base):
     for index, row in tqdm(data_base.iterrows()):
 
@@ -144,6 +144,7 @@ def main():
     process_category_data(cursor,category_data)
 
 
-
+#%%
 if __name__ == "__main__":
     main()
+# %%
