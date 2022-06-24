@@ -2,7 +2,7 @@
 import pandas as pd
 import seaborn as sns
 import logging
-from create_data_base import read_trending_data
+from etl import read_trending_data
 
 
 #%%
