@@ -119,6 +119,9 @@ def process_category_data(cur, category_data):
 
         cur.execute(staging_category_insert, category_data)
 
+def insert_tables(cur):
+    for query in insert_table_queries:
+        cur.execute(query)
 
 
 def main():
@@ -143,7 +146,8 @@ def main():
     # insert category_data in db
     process_category_data(cursor,category_data)
 
-
+    # insert olap tables
+    insert_tables(cursor)
 #%%
 if __name__ == "__main__":
     main()

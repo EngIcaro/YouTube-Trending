@@ -1,5 +1,12 @@
+from this import d
+
+
 staging_youtube_drop   = "DROP TABLE IF EXISTS staging_youtube"
 staging_category_drop  = "DROP TABLE IF EXISTS staging_category"
+dim_categorys_drop     = "DROP TABLE IF EXISTS dim_categorys"
+dim_videos_drop        = "DROP TABLE IF EXISTS dim_videos"
+dim_channels_drop      = "DROP TABLE IF EXISTS dim_channels"
+fact_trendings_drop    = "DROP TABLE IF EXISTS fact_trending"
 
 
 # ------ CREATE TABLES ---------- #
@@ -36,6 +43,54 @@ staging_category_create = ("""CREATE TABLE IF NOT EXISTS staging_category
                                 );
                         """)
 
+dim_categorys_create    = ("""CREATE TABLE IF NOT EXISTS dim_categorys
+                                (
+                                    categorys_category_id    smallint           ,
+                                    categorys_category_title varchar            ,
+                                    categorys_country        varchar            ,
+                                    PRIMARY KEY (categorys_category_id, categorys_country)           
+                                );
+
+                        """)
+
+dim_videos_create       = ("""CREATE TABLE IF NOT EXISTS dim_videos
+                                (
+                                    videos_video_id               varchar PRIMARY KEY,
+                                    videos_title                  varchar            ,
+                                    videos_published_at           varchar NOT NULL   ,
+                                    videos_tags                   varchar            ,
+                                    videos_thumbnail_link         varchar            ,
+                                    videos_comments_disabled      varchar            ,
+                                    videos_rating                 varchar            ,
+                                    videos_description            varchar            
+                                )
+                        """)
+
+dim_channels_create     = ("""CREATE TABLE IF NOT EXISTS dim_channels
+                                (
+                                    channels_channel_id           varchar PRIMARY KEY,
+                                    channels_channel_title        varchar
+                                )                       
+                        """)
+
+
+fact_trendings_create   = ("""CREATE TABLE IF NOT EXISTS fact_trending
+                                (
+                                    fact_trending_id_seq   SERIAL PRIMARY KEY ,
+                                    video_id               varchar NOT NULL   ,
+                                    channel_id             varchar NOT NULL   ,
+                                    category_id            smallint           ,
+                                    trending_date          varchar            ,
+                                    view_count             integer            ,
+                                    likes_count            integer            ,
+                                    dislikes_count         integer            ,
+                                    comment_count          integer            ,
+                                    country                varchar            ,
+                                    FOREIGN KEY (category_id,country) REFERENCES dim_categorys (categorys_category_id,categorys_country),
+                                    FOREIGN KEY (video_id) REFERENCES dim_videos(videos_video_id),
+                                    FOREIGN KEY (channel_id) REFERENCES dim_channels (channels_channel_id)
+                                );
+                        """)
 # ----- INSERT RECORDS ------ #
 staging_youtube_insert = ("""INSERT INTO staging_youtube
                             (
@@ -71,6 +126,70 @@ staging_category_insert = ("""INSERT INTO staging_category
                         """)
 
 
+dim_categorys_insert    = ("""INSERT INTO dim_categorys (categorys_category_id, categorys_category_title,
+                                                         categorys_country)
+                            SELECT DISTINCT
+                                category_id     ,
+                                category_title  ,
+                                country
 
-create_table_queries = [staging_youtube_create, staging_category_create]
-drop_table_queries   = [staging_youtube_drop, staging_category_drop]
+                            FROM staging_category
+
+                            UNION ALL 
+
+                            SELECT DISTINCT
+                                category_id          ,
+                                '' as category_title ,
+                                country
+
+                            FROM staging_youtube
+                            WHERE NOT EXISTS (SELECT 1 FROM staging_category WHERE (staging_category.category_id = staging_youtube.category_id and
+                                              staging_category.country = staging_youtube.country));
+                        """)
+
+dim_videos_insert       = ("""INSERT INTO dim_videos (videos_video_id, videos_title, videos_published_at,
+                                                      videos_tags, videos_thumbnail_link, videos_comments_disabled,
+                                                      videos_rating,videos_description)
+                            
+                            SELECT DISTINCT ON
+                                    (video_id) video_id ,
+                                    title            ,
+                                    published_at     ,
+                                    tags             ,
+                                    thumbnail_link   ,
+                                    comments_disabled,
+                                    rating           ,
+                                    description      
+                            FROM staging_youtube ;
+
+                        """)
+
+dim_channels_insert     = ("""INSERT INTO dim_channels (channels_channel_id,channels_channel_title)
+                        
+                            SELECT DISTINCT ON 
+                                (channel_id) channel_id ,
+                                channel_title
+                            
+                            FROM staging_youtube;
+                            
+                        """) 
+
+fact_trendings_insert   = ("""INSERT INTO fact_trending (video_id, channel_id, category_id,
+                                                         trending_date, view_count, likes_count,
+                                                         dislikes_count, comment_count, country)
+                            SELECT 
+                                    video_id               ,
+                                    channel_id             ,
+                                    category_id            ,
+                                    trending_date          ,          
+                                    view_count             ,
+                                    likes                  ,
+                                    dislikes               ,
+                                    comment_count          ,
+                                    country      
+                            FROM staging_youtube;           
+                        """)
+
+create_table_queries = [staging_youtube_create, staging_category_create, dim_categorys_create, dim_channels_create,dim_videos_create, fact_trendings_create]
+drop_table_queries   = [staging_youtube_drop,staging_category_drop,fact_trendings_drop,dim_categorys_drop, dim_videos_drop, dim_channels_drop]
+insert_table_queries = [dim_categorys_insert,dim_videos_insert,dim_channels_insert,fact_trendings_insert]
