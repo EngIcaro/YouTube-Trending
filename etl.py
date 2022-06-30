@@ -135,16 +135,16 @@ def main():
 
 
     # get youtube trending_data
-    data_base = read_trending_data("data/")
+    #data_base = read_trending_data("data/")
     # get category_data
-    category_data = read_category_data("data/")
+    #category_data = read_category_data("data/")
     # Remove nan rows of the trending_Data 
-    remove_nan_rows(data_base,['channelTitle'])
+    #remove_nan_rows(data_base,['channelTitle'])
 
     # insert youtube_tranding_data in db
-    process_trending_data(cursor, data_base)
+    #process_trending_data(cursor, data_base)
     # insert category_data in db
-    process_category_data(cursor,category_data)
+    #process_category_data(cursor,category_data)
 
     # insert olap tables
     insert_tables(cursor)

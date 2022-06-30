@@ -13,17 +13,17 @@ def create_database():
         youtubedb
     """
     #establishing the connection
-    conn = pg.connect(
-        database="postgres",user='postgres', password='postgres', host='localhost', port= '5432'
-    )
-    conn.autocommit = True
-    cursor = conn.cursor() 
+    #conn = pg.connect(
+    #    database="postgres",user='postgres', password='postgres', host='localhost', port= '5432'
+    #)
+    #conn.autocommit = True
+    #cursor = conn.cursor() 
 
     # create youtube database with UTF8
-    cursor.execute("DROP DATABASE IF EXISTS youtubedb")
-    cursor.execute("CREATE DATABASE youtubedb WITH ENCODING 'utf8'")
+#    cursor.execute("DROP DATABASE IF EXISTS youtubedb")
+#    cursor.execute("CREATE DATABASE youtubedb WITH ENCODING 'utf8'")
 
-    conn.close()
+#    conn.close()
 
     conn = pg.connect(
         database="youtubedb",user='postgres', password='postgres', host='localhost', port= '5432'
