@@ -223,9 +223,6 @@ fact_trendings_insert   = ("""INSERT INTO fact_trending (video_id, channel_id, c
                             FROM staging_youtube;           
                         """)
 
-#create_table_queries = [staging_youtube_create, staging_category_create, dim_categorys_create, dim_channels_create,dim_videos_create,dim_calendar_create, fact_trendings_create]
-#drop_table_queries   = [staging_youtube_drop,staging_category_drop,fact_trendings_drop,dim_categorys_drop, dim_videos_drop, dim_channels_drop, dim_calendar_drop]
-create_table_queries = [ dim_categorys_create, dim_channels_create,dim_videos_create,dim_calendar_create, fact_trendings_create]
-drop_table_queries   = [fact_trendings_drop,dim_categorys_drop, dim_videos_drop, dim_channels_drop, dim_calendar_drop]
-
+create_table_queries = [staging_youtube_create, staging_category_create, dim_categorys_create, dim_channels_create,dim_videos_create,dim_calendar_create, fact_trendings_create]
+drop_table_queries   = [staging_youtube_drop,staging_category_drop,fact_trendings_drop,dim_categorys_drop, dim_videos_drop, dim_channels_drop, dim_calendar_drop]
 insert_table_queries = [dim_categorys_insert,dim_videos_insert,dim_channels_insert,dim_calendar_insert,fact_trendings_insert]
