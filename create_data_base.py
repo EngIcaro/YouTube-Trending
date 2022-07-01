@@ -38,13 +38,23 @@ def create_database():
 
 
 def drop_tables(cur):
+    """This function is responsible for dropping 
+    all tables in the youtubedb database
 
+    Args:
+        cur (_cursor): cursor to database session
+    """
     for query in drop_table_queries:
         cur.execute(query)
 
 
 def create_tables(cur):
+    """This function is responsible for creating all
+    tables in the youtubedb 
 
+    Args:
+        cur (_cursor): cursor to database session
+    """
     for query in create_table_queries:
         cur.execute(query)
 

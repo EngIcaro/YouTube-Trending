@@ -3,8 +3,6 @@ import pandas as pd
 import seaborn as sns
 import logging
 from etl import read_trending_data
-
-
 #%%
 # ChannelTitle 1
 # Description 51719

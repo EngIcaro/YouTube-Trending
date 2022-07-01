@@ -84,6 +84,12 @@ def remove_nan_rows(data_base, column_name) -> bool:
 
 
 def process_trending_data(cur, data_base):
+    """This function fills staging_youtube table.
+
+    Args:
+        cur (_cursor): cursor to database session
+        data_base (dataframe): all youtube tranding data
+    """
     for index, row in tqdm(data_base.iterrows()):
 
         youtube_data = (row.video_id      ,       
@@ -108,6 +114,12 @@ def process_trending_data(cur, data_base):
 
 
 def process_category_data(cur, category_data):
+    """This function fills staging_category table.
+
+    Args:
+        cur (_cursor): cursor to database session
+        category_data (dataframe): all category data
+    """
     for index, row in tqdm(category_data.iterrows()):
 
         category_data=(
@@ -120,6 +132,11 @@ def process_category_data(cur, category_data):
         cur.execute(staging_category_insert, category_data)
 
 def insert_tables(cur):
+    """This function fills all dimensions and fact tables 
+
+    Args:
+        cur (_cursor): cursor to database session
+    """
     for query in insert_table_queries:
         cur.execute(query)
 
@@ -151,4 +168,3 @@ def main():
 #%%
 if __name__ == "__main__":
     main()
-# %%
