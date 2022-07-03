@@ -223,6 +223,48 @@ fact_trendings_insert   = ("""INSERT INTO fact_trending (video_id, channel_id, c
                             FROM staging_youtube;           
                         """)
 
+quality_check_one = """SELECT COUNT(videos_video_id) 
+                        FROM dim_videos
+                        WHERE videos_video_id IS NULL ;"""
+
+
+quality_check_two = """ SELECT count(channels_channel_id)
+                        FROM dim_channels
+                        WHERE channels_channel_id IS NULL;"""
+
+quality_check_three = """SELECT count(categorys_category_id)
+                        FROM dim_categorys
+                        WHERE categorys_category_id IS NULL;"""
+
+quality_check_four  = """SELECT count(calendar_trending_date)
+                         FROM dim_calendar 
+                         WHERE calendar_trending_date IS NULL;"""
+
+quality_check_five  ="""SELECT 
+                        COUNT(videos_video_id) as CONT
+                        FROM dim_videos; """
+
+quality_check_six   ="""SELECT 
+                        COUNT(channels_channel_id) as CONT
+                        FROM dim_channels; """
+
+quality_result_five ="""SELECT 
+                        COUNT( DISTINCT video_id) as CONT
+                        FROM fact_trending; """
+
+quality_result_six  ="""SELECT 
+                        COUNT( DISTINCT channel_id) as CONT
+                        from fact_trending; """
+
+
 create_table_queries = [staging_youtube_create, staging_category_create, dim_categorys_create, dim_channels_create,dim_videos_create,dim_calendar_create, fact_trendings_create]
 drop_table_queries   = [staging_youtube_drop,staging_category_drop,fact_trendings_drop,dim_categorys_drop, dim_videos_drop, dim_channels_drop, dim_calendar_drop]
 insert_table_queries = [dim_categorys_insert,dim_videos_insert,dim_channels_insert,dim_calendar_insert,fact_trendings_insert]
+data_quality_checks = [
+{'check_sql':quality_check_one  , 'expected_type':'number', 'expected_result':0},
+{'check_sql':quality_check_two  , 'expected_type':'number', 'expected_result':0},
+{'check_sql':quality_check_three, 'expected_type':'number', 'expected_result':0},
+{'check_sql':quality_check_four , 'expected_type':'number', 'expected_result':0},
+{'check_sql':quality_check_five , 'expected_type':'query' , 'expected_result':quality_result_five},
+{'check_sql':quality_check_six  , 'expected_type':'query' , 'expected_result':quality_result_six} ,
+]

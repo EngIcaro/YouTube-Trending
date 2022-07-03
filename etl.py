@@ -140,6 +140,31 @@ def insert_tables(cur):
     for query in insert_table_queries:
         cur.execute(query)
 
+def run_data_quality_checks(cur):
+    """This function checking the quality of final data
+
+    Args:
+        cur (_cursor): cursor to database session
+    """
+    for quality in data_quality_checks:
+        cur.execute(quality['check_sql'])
+        result = cur.fetchone()
+        result = result[0]
+        if(quality['expected_type'] == 'number'):
+            if(result == quality['expected_result']):
+                print("Data Quality [OK]")
+            else:
+                print("Data Quality [Error]")
+        else:
+            cur.execute(quality['expected_result'])
+            except_result = cur.fetchone()
+            except_result = except_result[0]
+            if(except_result == result):
+                print("Data Quality [OK]")
+            else:
+                print("Data Quality [Error]")
+
+
 
 def main():
 
@@ -165,6 +190,9 @@ def main():
 
     # insert olap tables
     insert_tables(cursor)
+
+    # Run Data Quality Checks
+    run_data_quality_checks(cursor)
 #%%
 if __name__ == "__main__":
     main()
